@@ -1,0 +1,27 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/core-build/serve.schema.json",
+  "port": 4321,
+  "https": true,
+  "serveConfigurations": {
+    "default": {
+      "pageUrl": "https://bootcampbcn.sharepoint.com/sites/bootcamp/Lists/SliderList/AllItems.aspx",
+      "fieldCustomizers": {
+        "Value": {
+          "id": "d77148f4-0050-405c-88d5-1b09ee923fe4",
+          "properties": {
+          }
+        }
+      }
+    },
+    "bSliderField": {
+      "pageUrl": "https://bootcampbcn.sharepoint.com/sites/bootcamp/Lists/SliderList/AllItems.aspx",
+      "fieldCustomizers": {
+        "Value": {
+          "id": "d77148f4-0050-405c-88d5-1b09ee923fe4",
+          "properties": {
+          }
+        }
+      }
+    }
+  }
+}

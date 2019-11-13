@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+    <ClientSideComponentInstance
+        Title="BTaskApp"
+        Location="ClientSideExtension.ApplicationCustomizer"
+        ComponentId="fa597c79-4998-42f5-b973-df97e7e5af71"
+        Properties="{&quot;testMessage&quot;:&quot;Test message&quot;}">
+    </ClientSideComponentInstance>
+</Elements>

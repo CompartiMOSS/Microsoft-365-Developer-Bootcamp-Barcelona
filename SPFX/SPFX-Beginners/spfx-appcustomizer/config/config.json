@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "b-task-app-application-customizer": {
+      "components": [
+        {
+          "entrypoint": "./lib/extensions/bTaskApp/BTaskAppApplicationCustomizer.js",
+          "manifest": "./src/extensions/bTaskApp/BTaskAppApplicationCustomizer.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "BTaskAppApplicationCustomizerStrings": "lib/extensions/bTaskApp/loc/{locale}.js"
+  }
+}
