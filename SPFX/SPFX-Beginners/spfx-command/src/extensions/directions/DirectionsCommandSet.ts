@@ -15,9 +15,9 @@ import * as strings from 'DirectionsCommandSetStrings';
  * it will be deserialized into the BaseExtension.properties object.
  * You can define an interface to describe it.
  *
- * GMAPS API KEY AIzaSyB9MGNdmqSvHHl16juBqXV1sU4bNO6KcQ0
+ * GMAPS API KEY
  * https://console.cloud.google.com/
- * ?loadSPFX=true&debugManifestsFile=https://localhost:4321/temp/manifests.js&customActions={"5d5b6ea5-e481-4a42-9b18-89ba98905195":{"location":"ClientSideExtension.ListViewCommandSet.CommandBar","properties":{"startingLocation":"Carrer del Triangle, 1, 4, 08002 Barcelona","addressColumnName":"Address","title":"Driving directions","message":"Driving directions to ","mode":"driving","mapsApiKey":"AIzaSyB9MGNdmqSvHHl16juBqXV1sU4bNO6KcQ0"}}}
+ * ?loadSPFX=true&debugManifestsFile=https://localhost:4321/temp/manifests.js&customActions={"5d5b6ea5-e481-4a42-9b18-89ba98905195":{"location":"ClientSideExtension.ListViewCommandSet.CommandBar","properties":{"startingLocation":"Carrer del Triangle, 1, 4, 08002 Barcelona","addressColumnName":"Address","title":"Driving directions","message":"Driving directions to ","mode":"driving","mapsApiKey":"GOOGLE_API_KEY"}}}
  * */
 export interface IDirectionsCommandSetProperties {
   startingLocation: string;
