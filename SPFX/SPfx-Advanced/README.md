@@ -1,4 +1,4 @@
-# SPFx for avengers 
+# SPFx Advanced 
 
 ## Ponentes
 1. Luis Mañez - MS Office Development MVP [@luismanez](https://twitter.com/luismanez)
