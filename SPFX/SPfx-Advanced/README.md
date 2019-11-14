@@ -14,4 +14,4 @@ En este workshop lo vamos a dividir en las siguientes tareas:
 
 [1.- React Hooks Por donde empezar](./reacthooks/readme.md)
 
-[2.- Consumir una Azure Funcion securizada en el AAD desde SPFx](./azuresecurizada/readme.md)
+[2.- Consumir una Azure Funcion securizada en el AAD desde SPFx](./funcionsecurizada/readme.md)
