@@ -9,7 +9,7 @@ Sobre estos ejemplos :
 # Ejemplos implementados
 
 Lista de ejemplos:
-  - [00-boiler-plate](/00-boilerplate): punto de partida, solo un proyecto de React utilizando Yeoman 
+  - [00-boiler-plate](./00-boilerplate): punto de partida, solo un proyecto de React utilizando Yeoman 
   - [01-use-state](/01-use-state): añadir un estado (elemento simple) a un componente funcional.
   - [02-use-state-object](/02-use-state-object): añadir un estado (object) a un componente funcional.
   - [03-component-did-mount](/03-component-did-mount): ejecutar algunas operaciones cuando se monta un componente funcional.
