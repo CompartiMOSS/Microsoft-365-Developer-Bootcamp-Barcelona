@@ -88,3 +88,165 @@ Primero, copia y guarda a buen recaudo el _Client Id_ y _Client Secret_ generado
 __Nota__: Asegúrate de que guardas los cambios. Hay un botón __Save__ en la _blade_ anterior.
 
 Una vez finalizados estos pasos, nuestra Function App ya estará securizada por Azure AD, así que ya no podremos llamar a ninguna de las Funciones, sin proporcionar un Token válido. De cómo se obtiene dicho Token, lo veremos en la parte de los webparts de spfx, pero la mayor parte de la magia nos la facilitará el propio spfx framework!
+
+Antes de continuar, desde el portal de Azure, vete al Azure Active Directory, y en la sección de Aplicaciones, verás que el asistente del paso anterior, ha registrado una nueva App en Azure AD.
+
+## Configurar Settings en la Function App
+
+Una vez securizada, es hora de añadir algunas Settings a la Function App, que se utilizan en código en la función que llamará a Graph API y que desarrollaremos más adelante.
+
+Añade las siguiente Settings a la function App:
+- ClientId: con el client id del paso anterior
+- ClientSecret: el secret generado al configurar la seguridad en el paso anterior
+
+![Function App Settings](./assets/app-settings.png)
+
+## Habilitar CORS en Function App
+
+Los endpoints de nuestra Function App van a ser invocados desde spfx, es decir, desde Client site (javascript en el browser), así que tenemos que habilitar CORS para que esto sea posible. Para ello nos vamos a las _Platform features_ de la Function App, y pinchamos en el link de CORS:
+
+![CORS](./assets/cors-link.png)
+
+En la lista de _Origins Allowed_ asegúrate de incluir la URL principal de SharePoint: __https://[TENANT].sharepoint.com__
+
+![CORS origins](./assets/cors-origins.png)
+
+## Configuración de un service principal en SharePoint para nuestra API
+
+Llegados a este punto, necesitamos configurar SharePoint para permitir que pueda comunicarse con nuestra API (Function App).
+
+Esto puede hacerse de varias formas, y las diferentes formas de hacerlo y sus ventajas / inconvenientes están muy bien explicados en este artículo de Andrew Connell [https://www.andrewconnell.com/blog/consider-avoiding-declarative-permissions-with-azure-ad-services-in-sharepoint-framework-projects](https://www.andrewconnell.com/blog/consider-avoiding-declarative-permissions-with-azure-ad-services-in-sharepoint-framework-projects)
+
+Te recomiendo hacerlo usando el Office365 cli, y evitar, tal como dice AC, la declaración a nivel de _manifest_ en el mismo proyecto spfx. La mayor ventaja que yo le veo, es que si lo hacemos desde O365 cli, vamos a poder probar nuestros webparts spfx en el mismo workbench de SharePoint, sin necesidad de hacer Deploy de la solución a SharePoint.
+
+Para ello, primero tenemos que instalar el Office365 cli (si no lo tenemos ya, claro). Podemos hacerlo usando _npm_:
+
+```ps
+npm i -g @pnp/office365-cli
+```
+
+una vez instalado, debemos conectarnos a nuestro SharePoint, en este enlace tienes como hacerlo [https://pnp.github.io/office365-cli/user-guide/connecting-office-365/](https://pnp.github.io/office365-cli/user-guide/connecting-office-365/)
+
+Una vez conectados, lanza el siguiente comando:
+
+```ps
+spo serviceprincipal grant add --resource "[YOUR_APP_NAME]" --scope "user_impersonation"
+```
+
+__Nota:__ el nombre de la App lo puedes ver en la configuración de seguridad de la Function App.
+__user_impersonation__ es el nombre del scope que está definido en la App en Azure AD (podríamos configurar nuestra App para tener varios _scopes_, y solicitar acceso a los scopes que nos interesen)
+
+## Code Heroes Webpart!
+
+Es hora de poner algo de código en nuestro webpart spfx. En este punto vamos a completar el webpart que llamará al endpoint de _Heroes_ y obtendrá un listado de super héroes que mostrará en pantalla.
+
+Antes de nada, situate en la carpeta: _...\m365-devbootcamp2019-marvel-webparts_, y vamos primero a instalar todos los _packages_ necesarios para el proyecto:
+
+```ps
+npm install
+```
+
+Una vez restaurados los _packages_ (de repente tendremos un folder _node_modules_ con un montón de archivos dentro), es hora de crear un método que llamará a nuestra API de forma segura. Para ello, hemos creado una clase en __services/HeroeService.ts__. Dentro de esta clase verás un método:
+
+```ts
+public async getHeroes(): Promise<IHeroe[]> {
+```
+
+En este método vamos a hacer uso de la clase del framework __AadHttpClientFactory__ (que pasaremos al constructor de la clase desde el webpart spfx) para obtener un cliente Http que podrá comunicarse con nuestra API de forma segura. Será esta clase quien hará toda la magia para obtener un Token de Azure AD válido para nuestra API. Vamos a hacer uso de _async / await_ para facilitar las operaciones asíncronas, en vez de trabajar con _Promises_.
+
+Antes de nada, actualiza el valor de la constante __API_RESOURCE_URI__ con la URl principal de la Function App:
+
+```ts
+const API_RESOURCE_URI: string = "https://marvel-api.azurewebsites.net";
+```
+
+Lo siguiente es obtener un _client_ desde la _factory_
+
+```ts
+const aadHttpClient: AadHttpClient = await this._aadHttpClientFactory.getClient(API_RESOURCE_URI);
+```
+
+Ya con este, podemos llamar a nuestro endpoint de súper héroes!
+
+```ts
+const httpClientResponse: HttpClientResponse = await aadHttpClient.get(this._endpoint, AadHttpClient.configurations.v1);
+```
+
+Copia el siguiente snippet dentro del método _getHeroes_:
+
+```ts
+    const aadHttpClient: AadHttpClient = await this._aadHttpClientFactory.getClient(API_RESOURCE_URI);
+    const httpClientResponse: HttpClientResponse = await aadHttpClient.get(this._endpoint, AadHttpClient.configurations.v1);
+
+    if (httpClientResponse.status !== 200) {
+      throw new Error(`Unable to get data from API. Ensure the API is secured by Azure AD, and the endpoint configured is correct (${this._endpoint})`);
+    }
+
+    return await httpClientResponse.json();
+```
+
+Ahora pasemos a echar un vistazo al webpart __MarvelHeroesWebpart.ts__ 
+
+Primero, edita el manifest del webpart, para que por defecto tenga el valor adecuado en la propiedad del webpart que define la URL del endpoint de super heroes que queremos llamar. Edita el fichero: __...\m365-devbootcamp2019-marvel-webparts\src\webparts\marvelHeroes\MarvelHeroesWebPart.manifest.json__
+
+El webpart usa React, y podemos ver como el contexto del webpart se pasa al componente principal de React:
+
+```ts
+const element: React.ReactElement<IMarvelHeroesProps > = React.createElement(
+      MarvelHeroes,
+      {
+        apiEndpoint: this.properties.apiEndpoint,
+        context: this.context
+      }
+    );
+```
+
+En dicho context, es donde tenemos disponible la _factory_ que utilizará el servicio _HeroeService_ que hemos completado hace en el paso anterior. Fíjate en el siguiente código del componente __MarvelHeroes.tsx__
+
+```ts
+private _heroeService: HeroeService;
+
+  constructor(props: IMarvelHeroesProps) {
+    super(props);
+
+    this._heroeService = new HeroeService(this.props.apiEndpoint, this.props.context.aadHttpClientFactory);
+
+    this.state = {
+      heroes: [],
+      oops: null
+    };
+  }
+```
+
+Es también en dicho componente, donde haremos la llamada a la API, y obtendremos nuestro listado de super héroes. Fíjate en el método __componentDidMount__
+
+```ts
+public componentDidMount(): void {
+    this._heroeService.getHeroes().then((heroes: IHeroe[]) => {
+      this.setState({
+        heroes: heroes
+      });
+    }).catch(error => {
+      console.log(error);
+      this.setState({
+        oops: 'Something went wrong... call the police!'
+      });
+    });
+  }
+```
+
+Una vez obtenemos los datos, actualizamos el _state_ del componente, para que vuelva a pintarse, esta vez mostrando el listado de héroes. El resto de componentes React del webpart son para la UI (por modularizar el código)
+
+Llegados a este punto, ya podemos probar nuestro __MarvelHeroesWebPart__. Para ello, ejecutamos el comando:
+
+```ps
+gulp serve --nobrowser
+```
+
+Esto compilará todo el TS, etc, y se quedará sirviendo nuestra solución. Ahora tenemos que añadir el webpart al workbench de SPO. Para ello, navega a tu SharePoint (a la site collection que quieras usar, pero te recomiendo que utilices una Modern Site Collection). El workbench lo puedes encontrar en la URL:
+
+```
+https://TENANT.sharepoint.com/{site collection}/_layouts/15/workbench.aspx
+```
+
+Añade el webpart, y si todo ha ido bien, tendrás un bonito listado de super héroes :)
