@@ -12,10 +12,10 @@ En este Workshop vamos a cubrir aspectos básicos de las capabilities de SPFx. V
 En este workshop lo vamos a dividir en las siguientes tareas:
 
 
-[1.- SPFx Application Customizer](./spfx-appcustomizer/readme.md)
+[1.- SPFx Application Customizer](./spfx-appcustomizer/README.md)
 
-[2.- SPFx Field Customizer](./spfx-fieldcustomizer/readme.md)
+[2.- SPFx Field Customizer](./spfx-fieldcustomizer/README.md)
 
-[3.- SPFx Command Set](./spfx-command/readme.md)
+[3.- SPFx Command Set](./spfx-command/README.md)
 
-[2.- SPFx Webpart](./spfx-webpart/readme.md)
+[2.- SPFx Webpart](./spfx-webpart/README.md)
