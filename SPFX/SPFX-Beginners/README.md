@@ -8,9 +8,7 @@
 ## Resumen
 En este Workshop vamos a cubrir aspectos básicos de las capabilities de SPFx. Vamos a centrarnos en los tres tipos de extensiones: Application Customizers, Field Customizers y Command Sets, además de Webparts. 
  
-
 En este workshop lo vamos a dividir en las siguientes tareas:
-
 
 [1.- SPFx Application Customizer](./spfx-appcustomizer/README.md)
 
