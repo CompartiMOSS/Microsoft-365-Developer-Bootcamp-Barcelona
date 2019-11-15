@@ -10,5 +10,5 @@ A continuación detallamos los pasos para crear la extensión.
 
 El resultado del siguiente workshop sera el siguiente : 
 
-![slider](../assets/spfx-fieldcustomizer.png)
+![slider](../assets/spfx-fieldcustomizer-001.png)
 
