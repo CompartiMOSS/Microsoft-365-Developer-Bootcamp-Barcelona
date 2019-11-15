@@ -1,6 +1,4 @@
-# Microsoft 365 Developer Bootcamp Barcelona 2019
-
-## PnP Provisioning
+# PnP Provisioning
 
 1. Get PnP Provisioning Schema
 
