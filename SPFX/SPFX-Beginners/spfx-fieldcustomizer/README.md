@@ -123,8 +123,9 @@ Para probar la extensión vamos a abir el fichero serve.json dentro de la carpet
 
 Modificamos dos parametros: 
 
-  1) pageUrl : Url completa a la lista que hemos creado en los prerequisitos
-  2) id: corresponde al guid del field, que podemos encontrar en la carpeta sharepoint -> assets -> elements.xml -> ClientSideComponentId.
+1) pageUrl : Url completa a la lista que hemos creado en los prerequisitos
+
+2) id: corresponde al guid del field, que podemos encontrar en la carpeta sharepoint -> assets -> elements.xml -> ClientSideComponentId.
 
 En una consola, dentro de la carpeta del proyecto, ejecutamos
 ```
