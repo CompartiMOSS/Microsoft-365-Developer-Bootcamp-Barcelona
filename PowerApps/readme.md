@@ -6,7 +6,7 @@ El objetivo de este laboratorio es el de crear un sistema de solicitud de cursos
 
 ## Ponentes
 
-1. Carlos Javier Sosa - [@cjsosam](https://twitter.com/cjsosam)
+1. Carlos Sosa - [@cjsosam](https://twitter.com/cjsosam)
 2. Ferran Chopo - [@fchopo](https://twitter.com/fchopo)
 
 ## Pre-requisitos
