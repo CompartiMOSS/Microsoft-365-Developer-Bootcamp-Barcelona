@@ -8,7 +8,51 @@
 3. Abre el fichero avengers.json y copia esta información
 
 ```
-
+{
+  "characters": [
+    {
+      "name": "Iron Man",
+      "actor": "Robert Downey, Jr.",
+      "realname": "Tony Stark",
+      "image": "https://terrigen-cdn-dev.marvel.com/content/prod/1x/002irm_ons_crd_03.jpg",
+      "link": "https://www.marvel.com/characters/iron-man-tony-stark"
+    },
+    {
+      "name": "Captain America",
+      "actor": "Chris Evans",
+      "realname": "Steve Rogers",
+      "image": "https://terrigen-cdn-dev.marvel.com/content/prod/1x/003cap_ons_crd_03.jpg",
+      "link": "https://www.marvel.com/characters/captain-america-steve-rogers"
+    },
+    {
+      "name": "Hulk",
+      "actor": "Mark Ruffalo, Edward Norton",
+      "realname": "Bruce Banner",
+      "image": "https://terrigen-cdn-dev.marvel.com/content/prod/1x/006hbb_ons_crd_03.jpg",
+      "link": "https://www.marvel.com/characters/hulk-bruce-banner"
+    },
+    {
+      "name": "Thor",
+      "actor": "Chris Hemsworth",
+      "realname": "Thor Odinson",
+      "image": "https://terrigen-cdn-dev.marvel.com/content/prod/1x/004tho_ons_crd_03.jpg",
+      "link": "https://www.marvel.com/characters/thor-thor-odinson"
+    },
+    {
+      "name": "Black Widow",
+      "actor": "Scarlett Johansson",
+      "realname": "Natasha Romanoff",
+      "image": "https://terrigen-cdn-dev.marvel.com/content/prod/1x/011blw_ons_crd_03.jpg",
+      "link": "https://www.marvel.com/characters/black-widow-natasha-romanoff"
+    },
+    {
+      "name": "Hawkeye",
+      "actor": "Jeremy Renner",
+      "realname": "Clint Barton",
+      "image": "https://terrigen-cdn-dev.marvel.com/content/prod/1x/018hcb_ons_crd_02.jpg",
+      "link": "https://www.marvel.com/characters/hawkeye-clint-barton"
+    }
+  ]
 ```
 4. Abre el fichero EmptyBot1.cs
 5. Añade los siguientes usings
