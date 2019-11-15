@@ -250,3 +250,119 @@ https://TENANT.sharepoint.com/{site collection}/_layouts/15/workbench.aspx
 ```
 
 Añade el webpart, y si todo ha ido bien, tendrás un bonito listado de super héroes :)
+
+## Mejoremos nuestra Function para obtener datos de MS Graph API
+
+Hasta ahora hemos visto lo sencillo que ha sido securizar una Function con Azure AD (next, next, next, done!), y como invocarla desde spfx, donde el framework hace toda la magia (y árdua tarea) de obtener el Token.
+
+En este punto, vamos a ir un paso más allá, y vamos a ver como podemos, desde la Function, obtener datos de MS Graph API (y lo mismo aplicaría a casi cualquier API securizada en Azure AD). Dicha llamada se hará en el contexto del usuario logado en SharePoint. Esto es lo que se llama _On Behalf of_ flow en oAuth2.
+
+Es hora de abrir con __Visual Studio__ la solución que se encuentra en: __...funcionsecurizada\M365.DevBootcamp2019.Marvel\M365.DevBootcamp2019.Marvel.sln__
+
+Verás un método sin código:
+
+```cs
+[FunctionName("GetMeOnGraph")]
+public static async Task<IActionResult> GetMeOnGraph([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequest req, ILogger log)
+```
+
+En este método, básicamente lo que necesitamos hacer es, primero, obtener el Bearer Token con el que se ha invocado a la Function. Una vez tenemos el Token, debemos intercambiarlo por otro Bearer Token, destinado para _MS Graph API_. Para dicho intercambio de un Token por otro, haremos uso de la librería __MSAL__
+
+Ahora paso a explicaros las partes más relevantes del código. El Token inicial, nos viene en los _Headers_ de la Request, así que podemos obtenerlo así:
+
+```cs
+var userImpersonationAccessToken = req.Headers["Authorization"].ToString().Replace("Bearer ", "");
+```
+
+Con dicho Token, podemos crear lo que MSAL llama un __UserAssetion__
+
+```cs
+UserAssertion userAssertion = new UserAssertion(userImpersonationAccessToken);
+```
+
+Ahora, podemos crear un __ConfidentialClient__, de nuevo usando MSAL (necesitaremos el ClientId y Secret de la App registrada en Azure AD, que antes definimos en las Settings de la Function App):
+
+```cs
+var app = ConfidentialClientApplicationBuilder.Create(ClientId)
+                   .WithClientSecret(ClientSecret)
+                   .WithAuthority(authority)
+                   .Build();
+```                   
+
+Con el _ConfidentialClient_ y la _UserAssertion_, ya podemos obtener un nuevo Token para MS Graph API:
+
+```cs
+var authResult = await app.AcquireTokenOnBehalfOf(
+                    new string[] { "https://graph.microsoft.com/.default" }, 
+                    userAssertion).ExecuteAsync();
+
+var graphAccessToken = authResult.AccessToken;                    
+```
+
+Finalmente, podemos llamar al Endpoint "me" de Graph, adjuntando el nuevo Bearer Token
+
+```cs
+var httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", graphAccessToken);
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+```
+
+El resto del código simplemente procesa el JSON obtenido y lo devuelve Serializado en una clase.
+
+Aquí está el código completo de la Function:
+
+```cs
+            try
+            {
+                string ClientId = Environment.GetEnvironmentVariable("ClientId", EnvironmentVariableTarget.Process);
+                string ClientSecret = Environment.GetEnvironmentVariable("ClientSecret", EnvironmentVariableTarget.Process);
+
+                var tenantId = req.HttpContext.User.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
+
+                if (string.IsNullOrEmpty(tenantId))
+                {
+                    tenantId = Environment.GetEnvironmentVariable("TenantId", EnvironmentVariableTarget.Process); //For some reason, in localhost only one claim is returned
+                }
+
+                string authority = $"https://login.microsoftonline.com/{tenantId}";
+
+                var userImpersonationAccessToken = req.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                log.LogInformation("AccessToken: {0}", userImpersonationAccessToken);
+
+                var app = ConfidentialClientApplicationBuilder.Create(ClientId)
+                   .WithClientSecret(ClientSecret)
+                   .WithAuthority(authority)
+                   .Build();
+
+                UserAssertion userAssertion = new UserAssertion(userImpersonationAccessToken);
+
+                var authResult = await app.AcquireTokenOnBehalfOf(
+                    new string[] { "https://graph.microsoft.com/.default" }, 
+                    userAssertion).ExecuteAsync();
+
+                var graphAccessToken = authResult.AccessToken;
+                log.LogInformation("Token OnBehalfOf: {0}", graphAccessToken);
+
+                var httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", graphAccessToken);
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://graph.microsoft.com/v1.0/me");
+
+                var response = await httpClient.SendAsync(request);
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                var user = JsonConvert.DeserializeObject<GraphUser>(content);
+
+                return new OkObjectResult(user);
+            }
+            catch (Exception ex)
+            {
+                log.LogError(ex, "Something went wrong");
+                throw;
+            }
+        }        
+```
+
+Ahora tenemos que volver a Publicar nuestra Function App a Azure.
