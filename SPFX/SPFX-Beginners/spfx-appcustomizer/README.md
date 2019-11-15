@@ -95,8 +95,10 @@ Para probar la extensión debemos completar la url del navegador con lo siguient
 ?loadSPFX=true&debugManifestsFile=https://localhost:4321/temp/manifests.js&customActions={"CUSTOMACTION":{"location":"ClientSideExtension.ApplicationCustomizer","properties":{"tasksListTitle":"TASKLISTTITLE"}}}
 
 Donde:
-    a) CUSTOMACTION: Guid de la custom action asociada al command set. Disponible en la carpeta sharepoint->assets->elements.xml->parámetro ClientSideComponentID de la custom action.
-    b) TASKLISTTITLE: Nombre de la lista de tareas de SPO que hemos creado en los pre-requisitos. Ej: Tasks.
+
+a) CUSTOMACTION: Guid de la custom action asociada al command set. Disponible en la carpeta sharepoint->assets->elements.xml->parámetro ClientSideComponentID de la custom action.
+
+b) TASKLISTTITLE: Nombre de la lista de tareas de SPO que hemos creado en los pre-requisitos. Ej: Tasks.
     
 
 Ejemplo:
