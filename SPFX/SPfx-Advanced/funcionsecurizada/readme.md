@@ -366,3 +366,20 @@ Aquí está el código completo de la Function:
 ```
 
 Ahora tenemos que volver a Publicar nuestra Function App a Azure.
+
+## Actualizar URIs en nuestro Graph webpart
+
+Con nuestro nuevo Endpoint, podemos volver a nuestro proyecto spfx, y actulizar las URIs que apuntan a él. Abre el fichero __m365-devbootcamp2019-marvel-webparts\src\services\GraphService.ts__ y actualiza la URI:
+
+```ts
+const API_RESOURCE_URI: string = "https://XXXXXXXX.azurewebsites.net";
+```
+
+Echa un vistazo al resto del código, verás que hemos seguido el mismo proceso que en el _Heroes webpart_
+
+Ya solo queda volver al workbench de SharePoint, y añadir el webpart __FunctionFlowsToGraphTesterWebPart__ (sí!, había nombres peores...). Si todo ha ido bien, verás que aparece información del usuario Logado, que hemos obtenido llamando a Graph!
+
+__Enhorabuena!!__ has completado el Lab.
+
+Os he dejado el lab completo en mi GitHub (aún así, recuerda que tendrás que editar URIs, settings, etc):
+[https://github.com/luismanez/m365-dev-bootcamp-bcn-2019](https://github.com/luismanez/m365-dev-bootcamp-bcn-2019)
