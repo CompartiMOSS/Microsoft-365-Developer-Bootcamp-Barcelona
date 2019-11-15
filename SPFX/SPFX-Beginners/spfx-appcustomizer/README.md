@@ -28,36 +28,80 @@ a) Para crear la extensión ejecutamos el siguiente comando :
     ? What is your Application Customizer description? spfx-appcustomizer description
 
 
-![spfx-appcustomizer-001](../assets/spfx-appcustomizer-001.png)
+![spfx-appcustomizer-001](./assets/spfx-appcustomizer-001.png)
 
+Una vez creada la extensión, la abrimos en VS Code y, en el package.json, anadimos pnpjs en dependencies.
+```ts
+"@pnp/pnpjs": "1.3.7"
+```
 
-Para probar la extensión debemos completar la url del navegador lo siguiente : 
+Abrimos el fichero typescript de la app customizer y usamos pnpjs para recibir, de la lista de tareas, la url de la vista Late Tasks:
 
+```ts
+// Get list (task list title property) Late Tasks view and add it to the batch. Construct the view url and assign it to the _viewUrl variable.
+pnp.sp.web.lists.getByTitle(this.properties.tasksListTitle).views.getByTitle('Late Tasks').inBatch(batch).get().then((view: any) => {
+    this._viewUrl = `${view.ServerRelativeUrl}?FilterField1=AssignedTo&FilterValue1=${escape(this.context.pageContext.user.displayName)}`;
+});
+```
 
-Application Customizer
-?loadSPFX=true&debugManifestsFile=https://localhost:4321/temp/manifests.js&customActions={"fa597c79-4998-42f5-b973-df97e7e5af71":{"location":"ClientSideExtension.ApplicationCustomizer","properties":{"tasksListTitle":"Tasks"}}}
+Y las tareas ya vencidas y no completadas:
 
+```ts
+// Get items from the list that belongs to the current logged in user, with past due date and status other than completed. Assign it to the _dueTasks variable.
+pnp.sp.web.lists.getByTitle(this.properties.tasksListTitle)
+    .items.expand('AssignedTo/Id').select('Title, AssignedTo, AssignedTo/Id, DueDate')
+    .filter(`AssignedTo/Id eq ${this.context.pageContext.legacyPageContext.userId} and DueDate lt datetime'${today.toISOString()}' and Status ne 'Completed'`)
+    .get().then((items: any) => {
+    this._dueTasks = items;
+    });
+```
 
-Los Valores son : 
+Acto seguido, llamamos al metodo renderPlaceHolder, que se encarga de renderizar, si hemos obtenido tareas, el mensaje en el top placeholder:
 
-customAction : 
-        Dentro del fichero de la extensión "BTaskAppApplication.Customizer.manifest.json.
+```ts
+@override
+  public _renderPlaceholder(): void {
+
+    // Return if there are no due tasks
+    if (!this._dueTasks || !this._dueTasks.length) {
+      return;
+    }
+
+    // If not existing create top placehoder.
+    if (!this._topPlaceholder) {
+      this._topPlaceholder = this.context.placeholderProvider.tryCreateContent(
+        PlaceholderName.Top,
         {
-        "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-extension-manifest.schema.json",
+          onDispose: this._onDispose
+        });
+    }
 
-        "id": "fa597c79-4998-42f5-b973-df97e7e5af71",
-        "alias": "BTaskAppApplicationCustomizer",
-        "componentType": "Extension",
-        "extensionType": "ApplicationCustomizer",
+    // If top placeholder is existing, fill it with the HTML that informs the user that he/she has tasks that have exeeded their due date.
+    if (this._topPlaceholder && this._topPlaceholder.domElement) {
+      this._topPlaceholder.domElement.innerHTML = `
+                <div class="${styles.app}">
+                  <div class="ms-bgColor-themeDark ms-fontColor-white ${styles.header}">
+                    <i class="ms-Icon ms-Icon--Info" aria-hidden="true"></i> ${escape(strings.Message)}&nbsp;
+                    <a href="${this._viewUrl}" target="_blank">${escape(strings.GoToList)}</a>
+                  </div>
+                </div>`;
+    }
+  }
+```
 
-        // The "*" signifies that the version should be taken from the package.json
-        "version": "*",
-        "manifestVersion": 2,
+Para probar la extensión debemos completar la url del navegador con lo siguiente : 
 
-        // If true, the component can only be installed on sites where Custom Script is allowed.
-        // Components that allow authors to embed arbitrary script code should set this to true.
-        // https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
-        "requiresCustomScript": false
-        }
+?loadSPFX=true&debugManifestsFile=https://localhost:4321/temp/manifests.js&customActions={"CUSTOMACTION":{"location":"ClientSideExtension.ApplicationCustomizer","properties":{"tasksListTitle":"TASKLISTTITLE"}}}
 
-tasksListTitle : Nombre de la lista creada en el Pre-Requisito.
+Donde:
+    a) CUSTOMACTION: Guid de la custom action asociada al command set. Disponible en la carpeta sharepoint->assets->elements.xml->parámetro ClientSideComponentID de la custom action.
+    b) TASKLISTTITLE: Nombre de la lista de tareas de SPO que hemos creado en los pre-requisitos. Ej: Tasks.
+    
+
+Ejemplo:
+
+https://bootcampbcn.sharepoint.com/sites/bootcamp?loadSPFX=true&debugManifestsFile=https://localhost:4321/temp/manifests.js&customActions={"fa597c79-4998-42f5-b973-df97e7e5af71":{"location":"ClientSideExtension.ApplicationCustomizer","properties":{"tasksListTitle":"Tasks"}}}
+
+Una vez aceptamos cargar los scripts de depuracion, al cargar la pagina, si hay items en la lista de tareas que hagan match con nuestra query, se mostrarà el HTML que hemos definido:
+
+![AppCust1](./assets/AppCust1.png)
