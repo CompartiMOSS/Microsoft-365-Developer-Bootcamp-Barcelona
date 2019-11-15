@@ -1,4 +1,4 @@
-## spfx-command
+## Command Set Extension
 
 Vamos a ver como crear y configurar una extension de tipo Command Set que carga una modal dialog con las rutas de Google Maps des de donde nos encontramos al punto establecido en una columna del item seleccionado.
 
@@ -123,6 +123,7 @@ class HtmlDialogContent extends React.Component<IHtmlDialogContentProps, {}> {
   }
 }
 ```
+### Probar Extension
 
 Una vez el codigo está listo, para ejecutarlo:
 

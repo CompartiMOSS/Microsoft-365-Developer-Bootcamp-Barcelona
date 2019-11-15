@@ -1,15 +1,14 @@
 ## Extensión spfx-appcustomizer
 
+Vamos a ver como crear una SPFx Extension de tipo Application Customizer, que muestra un mensaje en el placeholder top indicando si tenemos tareas pendientes que han expirado y mostrando un link a la lista de tareas.
 
-Pre-requisitos : 
+### Prerequisitos
 
-    Dentro de vuestro Tenant en un Site Collection de SharePoint crear una Lista de tipo tareas.
+Dentro de vuestro Tenant en un Site Collection de SharePoint crear una Lista de tipo tareas.
 
+### Crear Extension
 
-A continuación detallamos los pasos para crear la extensión.
-
-
-a) Para crear la extensión ejecutamos el siguiente comando : 
+Para crear la extensión ejecutamos el siguiente comando : 
 
     yo @microsoft/sharepoint
 
@@ -88,6 +87,8 @@ Acto seguido, llamamos al metodo renderPlaceHolder, que se encarga de renderizar
     }
   }
 ```
+
+### Probar Extension
 
 Para probar la extensión debemos completar la url del navegador con lo siguiente : 
 
