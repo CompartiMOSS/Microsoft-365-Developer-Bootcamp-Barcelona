@@ -12,7 +12,6 @@ export interface IBSliderFieldProps {
   onChange: (value: number, id: string) => void;
 }
 
-
 export interface ISliderState {
   value?: number;
 }

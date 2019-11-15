@@ -9,7 +9,6 @@ import {
 } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'FileUploaderWebPartStrings';
-import FileUploader from './components/FileUploader';
 import { IFileUploaderProps } from './components/IFileUploaderProps';
 import { IDigestCache, DigestCache } from '@microsoft/sp-http';
 import FileUpload from './components/FileUploader';
