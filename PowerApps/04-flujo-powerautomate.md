@@ -22,7 +22,7 @@ Para poder enviar la solicitud de aprobación a los aprobadores, primeramente de
 
 ![Crear flujo automatizado](./images/powerautomate/Paso_03_AccionHTTP.png)
 
-2. Guardaremos los resultados de la llamada en una **variable**, que inicializaremos con el valor de la salida del paso previo, y a la se que se deberá asignar el valor __body('Enviar_una_solicitud_HTTP_a_SharePoint')[['d']['results']__:
+2. Guardaremos los resultados de la llamada en una **variable**, que inicializaremos con el valor de la salida del paso previo, y a la se que se deberá asignar el valor __body('Enviar_una_solicitud_HTTP_a_SharePoint')['d']['results']__:
 
 ![Inicializar variable](./images/powerautomate/Paso_04_VariableAprobadores.png)
 
