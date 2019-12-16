@@ -22,7 +22,7 @@ Para poder enviar la solicitud de aprobación a los aprobadores, primeramente de
 
 ![Crear flujo automatizado](./images/powerautomate/Paso_03_AccionHTTP.png)
 
-2. Guardaremos los resultados de la llamada en una **variable**, que inicializaremos con el valor de la salida del paso previo:
+2. Guardaremos los resultados de la llamada en una **variable**, que inicializaremos con el valor de la salida del paso previo, y a la se que se deberá asignar el valor __body('Enviar_una_solicitud_HTTP_a_SharePoint')[['d']['results']__:
 
 ![Inicializar variable](./images/powerautomate/Paso_04_VariableAprobadores.png)
 
@@ -30,11 +30,13 @@ Para poder enviar la solicitud de aprobación a los aprobadores, primeramente de
 
 ![Inicializar variables bucle](./images/powerautomate/Paso_05_VariablesBucle.png)
 
-4. En este paso recorreremos la lista obtenida en el paso 1, y para cada elemento, nos guardaremos su dirección de correo electronico. Para ello deberemos seleccionar una acción de tipo **Control** **Para cada uno**, donde nos guardaremos en la variable i el índice del paso.
-
-![Guardar aprobadores](./images/powerautomate/Paso_06_RecorrerAprobadores.png)
+4. En este paso recorreremos la lista obtenida en el paso 1, y para cada elemento, nos guardaremos su dirección de correo electronico. Para ello deberemos seleccionar una acción de tipo **Control** **Para cada uno**, donde nos guardaremos en la variable i el índice del paso. 
 
 De esta manera, en la variable **correosAprobadores** tendremos guardadas las direcciones de correo electrónico de los miembros del grupo **Aprobadores**, a los cuáles deberemos enviar las solicitudes de aprobación.
+
+La fórmula para concatenar las direcciones de correo electrónico será la siguiente: __concat(variables('usuariosAprobadores')[variables('i')]['Email'],';')__
+
+![Guardar aprobadores](./images/powerautomate/Paso_06_RecorrerAprobadores.png)
 
 ## Uso de Aprobaciones
 
